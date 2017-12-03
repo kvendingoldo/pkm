@@ -1,0 +1,181 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 15.08.2 ] */
+
+/* [wxMaxima: input   start ] */
+eq1:diff(u(t),t,2)+3*u(t)+epsilon*u(t)^5;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+epsi:0.01;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+depends([u0,u1],t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ute:u0+epsilon*u1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq2:subst(ute, u(t),eq1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq3:expand(eq2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq4:ev(eq3,diff);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eps0:coeff(eq4, epsilon, 0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eps1:coeff(eq4, epsilon, 1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq5:ode2(eps0,u0,t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq5:ic2(eq5,t=0,u0=1, 'diff(u0,t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq6:subst(rhs(eq5), u0, eps1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq7:ode2(eq6, u1, t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq7:ic2(eq7, t=0,  u1=0, 'diff(u1, t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+direct:subst([u0=rhs(eq5),u1=rhs(eq7)],ute);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+N:2$;
+wList:makelist(concat(w,i), i, 0, N-1)$;
+eq_tau:tau=t*sum(wList[i+1]*epsilon^i, i, 0, N-1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_:solve(eq_tau,t)[1];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+w0_:2$;
+t_:subst(w0_,w0,t_);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq8:subst(t_,direct);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq9:taylor(eq8,epsilon,0, 1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq10:taytorat(eq9);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq11:expand(coeff(eq9,epsilon,1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq12:coeff(eq11, tau, 1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq13:solve(eq12, w1)[1];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+w1_:rhs(eq13);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq14:subst(w1_, w1, eq10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eq_tau:subst(w0_,w0,eq_tau)$;
+eq_tau:subst(w1_,w1,eq_tau);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uniform:subst(eq_tau,eq14);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+directEps:subst(epsi, epsilon, direct);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+directList:makelist([t1,float(subst(t1,t,directEps))],t1, 0, 50, 0.01);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uniformEps:subst(epsi,epsilon,uniform);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uniformList:makelist([t1,float(subst(t1,t,uniformEps))],t1,0,50,0.01);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+exact: rk([diff(y,t) - y1, diff(y1,t) + 3*y + 0.01*y^5], [y,y1], [1, 0], [t, 0, 50, 0.01]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+exactList: makelist([p[1], p[2]], p, exact);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+absListDirect:makelist(abs(exactList[i][2] - directList[i][2]), i, 1, length(exactList));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxabsED:lmax(absListDirect);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxabsDirect:lmax(makelist(abs(directList[i][2]),i,1,length(directList)));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+errorDirect:maxabsED * 100/maxabsDirect;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+absListUniform:makelist(abs(exactList[i][2] - uniformList[i][2]), i, 1, length(exactList));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxabsEU:lmax(absListUniform);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxabsUniform:lmax(makelist(abs(uniformList[i][2]),i,1,length(uniformList)));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+errorUniform:maxabsEU*100/maxabsUniform;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+plot2d ([[discrete, exactList], [discrete, directList], [discrete, uniformList]], [xlabel,"t"], [ylabel,"u"]);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

@@ -1,0 +1,100 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: input   start ] */
+eq: diff(u(t), t, 2)+u(t)+eps*u(t)^5;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+depends([u0, u1], t)$
+q: u0+eps*u1;
+a: subst(q, u(t), eq);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a: expand(a);
+b: ev(a, diff);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k: coeff(b, eps, 0);
+m: coeff(b, eps, 1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: ode2(k, u0, t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+c: ic2(s, t=0, u0=1, 'diff(u0,t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+m1: subst(c, m);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s2: ode2(m1, u1, t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+c2: ic2 (s2, t=0, u1=0, 'diff(u1, t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u_pr: subst([c, c2], q);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+exp_w: 1 + eps * w1;
+ex_t: tau/exp_w;
+
+eq1: subst(ex_t, t, u_pr);
+eq2_tay: taylor(eq1, eps, 0, 1);
+eq2: expand( taytorat(eq2_tay) );
+coe: coeff(eq2, eps, 1);
+coe2: coeff(coe, tau, 1);
+omega: rhs(solve(coe2, w1)[1]);
+eq3: subst(omega, w1, eq2);
+u_rp: subst(omega, w1, subst(t * exp_w, tau, eq3));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sol: rk([v, -u - 0.4*u^5],[u, v],[1,0],[t,0,20,0.02])$
+
+
+wxplot2d ([discrete,makelist([p[1],p[2]],p,sol)], [xlabel,"t"],[ylabel,"y"])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u_pr_1: subst(0.4, eps, u_pr)$
+u_rp_1: subst(0.4, eps, u_rp)$
+wxplot2d ([u_pr_1, u_rp_1], [t,0,20], [xlabel,"t"],[ylabel,"y"], [legend,"u_pr","u_rp"])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+pts2: makelist([ti, float(subst(ti, t, u_pr_1))], ti, 0, 20, 0.01)$
+wxplot2d ([[discrete,makelist([p[1],p[2]],p,sol)], [discrete,makelist([p[1],p[2]],p,pts2)], u_rp_1], [t,0,20], [xlabel,"t"],[ylabel,"y"])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u_ex_l: makelist(p[2], p, sol)$
+u_rp_1$
+u_rp_l: makelist(float(subst(ti, t, u_rp_1)), ti, 0, 20, 0.02)$
+u_rp_l[1];
+a1: makelist(abs(u_ex_l[i] - u_rp_l[i]), i, 1, length(u_ex_l))$
+a1[1];
+a1max: lmax(a1)$
+a2: makelist(abs(u_ex_l[i]), i, 1, length(u_ex_l))$
+a2max: lmax(a2)$
+a1max / a2max * 100;
+
+u_pr_l: makelist(float(subst(ti, t, u_pr_1)), ti, 0, 20, 0.02)$
+a3: makelist(abs(u_ex_l[i] - u_pr_l[i]), i, 1, length(u_ex_l))$
+a3max: lmax(a3)$
+a3max / a2max * 100;
+/* [wxMaxima: input   end   ] */
+
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

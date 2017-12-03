@@ -1,0 +1,42 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: input   start ] */
+eq: diff(u(t), t, 2)+eps*(diff(u(t), t))^3+9*u(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+depends([u0, u1], t)$
+q: u0+eps*u1;
+a: subst(q, u(t), eq);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a: expand(a);
+b: ev(a, diff);
+b: expand(b);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k: coeff(b, eps, 0);
+m: coeff(b, eps, 1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: ode2(k, u0, t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+c: ic2(s, t=0, u0=1, 'diff(u0,t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+m1: subst(c, m);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s2: ode2(m1, u1, t);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
