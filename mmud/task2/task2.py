@@ -2,7 +2,7 @@ import numpy as np
 import scipy.optimize as optimize
 import matplotlib.pyplot as plt
 
-u = [8, 10]
+u = [1, 1]
 
 
 def system(x):
@@ -16,36 +16,27 @@ def plt_1(x):
 
 
 def plt_2(x):
-    x2 = (0.1 * u[1] - 0.7 * x) / (0.3 * x)
+    x2 = (0.1 * u[1]) / (0.3 * x + 0.7)
     plt.plot(x,  x2, color="green")
 
 
-plt_1(np.linspace(-3, -0.3, 30))
-plt_1(np.linspace(0.1, 3, 30))
+plt_1(np.linspace(-4.5, -0.7, 50))
+plt_1(np.linspace(-0.6, 4.5, 50))
 
-plt_2(np.linspace(-3, 0, 23))
-plt_2(np.linspace(-0.6, 3, 37))
+plt_2(np.linspace(-4.5, -2.4, 50))
+plt_2(np.linspace(-2.3, 4.5, 50))
 
-x0 = optimize.fsolve(system, [-2., 0.])
-x1 = optimize.fsolve(system, [1., 0.])
-x2 = optimize.fsolve(system, [-1., -40.])
+p0 = optimize.fsolve(system, [-10, 0])
 
 print("Balance position:")
-print("x0 = ", x0)
-print("x1 = ", x1)
-print("x2 = ", x2)
+print("p0 = ", p0)
 
 print("Check:")
-print(system(x0))
-print(system(x1))
-print(system(x2))
+print(system(p0))
 
-plt.scatter(x0[0], x0[1])
-plt.scatter(x1[0], x1[1])
-plt.scatter(x2[0], x2[1])
+plt.scatter(p0[0], p0[1])
 
 plt.xlim(-5, 5)
 plt.ylim(-20, 20)
 plt.grid(True)
-
 plt.show()

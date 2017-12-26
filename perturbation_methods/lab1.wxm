@@ -1,13 +1,13 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
-/* [ Created with wxMaxima version 0.8.2 ] */
+/* [ Created with wxMaxima version 16.04.0 ] */
 
 /* [wxMaxima: input   start ] */
-eq: diff(u(t), t, 2)+u(t)+eps*u(t)^5;
+eq: diff(u(t), t, 2)+9*u(t)+eps*u(t)^5;
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-depends([u0, u1], t)$
-q: u0+eps*u1;
+depends([u0, u1, u2], t)$
+q: u0+eps*u1+eps^2*u2;
 a: subst(q, u(t), eq);
 /* [wxMaxima: input   end   ] */
 
@@ -19,6 +19,7 @@ b: ev(a, diff);
 /* [wxMaxima: input   start ] */
 k: coeff(b, eps, 0);
 m: coeff(b, eps, 1);
+r: coeff(b, eps, 2);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
@@ -42,7 +43,19 @@ c2: ic2 (s2, t=0, u1=0, 'diff(u1, t)=0);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-u_pr: subst([c, c2], q);
+m2: subst(c2, r);
+
+s3: ode2(m2, u2, t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+c3: ic2(s3, t=0, u2=0, 'diff(u2, t)=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+
+
+u_pr: subst([c, c2, c3], q);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
@@ -60,15 +73,15 @@ u_rp: subst(omega, w1, subst(t * exp_w, tau, eq3));
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-sol: rk([v, -u - 0.4*u^5],[u, v],[1,0],[t,0,20,0.02])$
+sol: rk([v, -9*u - 0.5*u^5],[u, v],[1,0],[t,0,20,0.02])$
 
 
 wxplot2d ([discrete,makelist([p[1],p[2]],p,sol)], [xlabel,"t"],[ylabel,"y"])$
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-u_pr_1: subst(0.4, eps, u_pr)$
-u_rp_1: subst(0.4, eps, u_rp)$
+u_pr_1: subst(0.5, eps, u_pr)$
+u_rp_1: subst(0.5, eps, u_rp)$
 wxplot2d ([u_pr_1, u_rp_1], [t,0,20], [xlabel,"t"],[ylabel,"y"], [legend,"u_pr","u_rp"])$
 /* [wxMaxima: input   end   ] */
 
@@ -94,7 +107,6 @@ a3: makelist(abs(u_ex_l[i] - u_pr_l[i]), i, 1, length(u_ex_l))$
 a3max: lmax(a3)$
 a3max / a2max * 100;
 /* [wxMaxima: input   end   ] */
-
 
 /* Maxima can't load/batch files which end with a comment! */
 "Created with wxMaxima"$
